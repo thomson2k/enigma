@@ -1,0 +1,25 @@
+:root {
+    --lightFont: #000;
+    --darkFont: #ffffff;
+    --dark: #09181C;
+    --light: #fff;
+    --font: 'Jost', sans-serif;
+}
+body {
+    margin: 0;
+    background-color: var(--dark);
+    color: var(--darkFont);
+    font-family: var(--font);
+}
+
+.App {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+#logo {
+    text-align: center;
+    padding: 1em;
+}
+#logo img {
+    width: 5em;
+}
