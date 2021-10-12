@@ -1,10 +1,107 @@
+.Card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
 .question_container{
-    background-color: #FFDD40;
-    padding: 2em;
-    font-size: 4em;
+    background-color: #fff;/*#b697ff FFDD40 #b697ff #b697ff*/
+    padding: 3em 0;
+    font-size: 2.5em;
     color: black;
     text-align: center;
+    position: relative;
+    height: 20vh;
 }
 .question {
-
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:unset;
+}
+.question p:nth-child(1) {
+    transition: 2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.full_height {
+    height: calc(100% - 6em);
+    transition: 1s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 5em;
+}
+.answer_container{
+    max-width: 1240px;
+    margin: 3em auto;
+    transition: box-shadow .3s;
+}
+.answer_container div{
+    border: 2px solid rgba(206, 206, 206, 0.14);
+    margin: 1em;
+    padding: 2em;
+    border-radius: 7px;
+    cursor: pointer;
+}
+.answer_container div:hover {
+    box-shadow: 0 0 11px rgba(255, 255, 255, 0.2);
+}
+.questionNo {
+    color: grey;
+    font-size: smaller;
+}
+.nextBtn {
+    background-color: #FFDD40;
+    color: #000;
+    padding: 1.5em;
+    border-radius: 5px;
+    border: 0;
+    text-align: right;
+    cursor: pointer;
+}
+.correct {
+    color: green;
+    background: seagreen;
+}
+.question p {
+    margin: 0;
+}
+.confetti{
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 1000;
+}
+#progress_bar {
+    transition: .1s linear;
+    position: absolute;
+    bottom: -0.3em;
+    left: 0;
+    width: 100%;
+    height: .3em;
+    background-image: linear-gradient( 64.5deg,  rgba(245,116,185,1) 14.7%, rgba(89,97,223,1) 88.7% );
+}
+.red {
+    background: rgb(226, 65, 65) !important;
+}
+@media screen and (max-width: 992px) {
+    .full_height {
+        height: 100%!important;
+    }
+    .question_container {
+        padding: 1.5em 0 10px;
+        height: 50%;
+    }
+    .answer_container {
+        margin: 0;
+    }
+    .answer_container div {
+        margin: 1em 5px;
+        padding: 2em;
+    }
+    .question{
+        font-size: 4vh;
+    }
 }

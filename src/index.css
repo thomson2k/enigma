@@ -10,3 +10,9 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+.success {
+  background-color: green;
+}
+.fail {
+  background-color: red;
+}
