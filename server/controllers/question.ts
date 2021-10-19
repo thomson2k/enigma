@@ -24,13 +24,13 @@ const createQuestion = async (req: Request, res: Response, next: NextFunction) =
             } } },
             function(err:any, result:any):void {
               if (err) {
-                res.send(err);
-              } else {
-                res.send(result);
-              }
+                  res.send(err);
+                } else {
+                    res.send(result);
+                }
             }
-          );
-    } else {
+            );
+        } else {
         const question = new Question({
             category: category,
             img: img,
@@ -55,6 +55,8 @@ const createQuestion = async (req: Request, res: Response, next: NextFunction) =
                 });
             })
             .catch((error) => {
+                console.log(error);
+
                 return res.status(500).json({
                     message: error.message,
                     error

@@ -2,20 +2,20 @@ import React, { useState, useEffect} from 'react'
 import styles from "./Card.module.css";
 import { IState as Props } from "../App";
 import Confetti from 'react-dom-confetti';
+import { parse } from 'path';
 
 interface categoryProps {
     passSpecificCategory: {
         category: string
-        numberOfQuestions: number
         img: string
         questions: {
-            question: string
+            questionName: string
             answers: {
                 A: string
                 B: string
                 C: string
                 D: string
-            }[]
+            }
             correctAnswer: string
         }[]
     }[]
@@ -23,13 +23,14 @@ interface categoryProps {
 
 
 const Card: React.FC<categoryProps> = ({ passSpecificCategory }) => {
-    const [questionNo, setquestionNo] = useState(0)
-    const [userAnswer, setUserAnswer] = useState('')
+    const [questionNo, setquestionNo] = useState(0);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [userIndex, setUserIndex] = useState('');
     const [count, setCount] = useState(100);
     const [score, setScore] = useState(0);
     const [finish, setFinish] = useState(false)
-    const questions = passSpecificCategory[0].questions[questionNo].question;
-    const answers = passSpecificCategory[0].questions[questionNo].answers[0];
+    const questions = passSpecificCategory[0].questions[questionNo].questionName;
+    const answers = passSpecificCategory[0].questions[questionNo].answers;
     const correctAnswer = passSpecificCategory[0].questions[questionNo].correctAnswer;
 
 
@@ -49,26 +50,50 @@ const Card: React.FC<categoryProps> = ({ passSpecificCategory }) => {
 
     useEffect(() => {
         if(count >= 0) {
-            console.log(count);
             const timer = setTimeout(() => {
-                setCount((count) => count - 1);
+                if(!userAnswer) {
+                    setCount((count) => count - 1);
+                } else {
+                    setCount((count) => count);
+                }
             }, 100);
             return () => clearTimeout(timer);
         }
-    });
+    },[count]);
+
 
     const checkAnswer = (index:number) => {
         return (event: React.MouseEvent) => {
             event.preventDefault();
-            const answerID = event.target as HTMLElement;
-            setUserAnswer(answerID.id)
+            const ev = event.target as HTMLElement;
+            setUserIndex(ev.id);
+            // tu lezy problem
+            // user answer sie nadpisuje
+            const answerID = parseInt(ev.id)
 
-            if(answerID.id == correctAnswer) {
-                setScore(score + 1)
+            switch (answerID) {
+                case 0:
+                    setUserAnswer("A")
+                    break;
+                case 1:
+                    setUserAnswer("B")
+                    break;
+                case 2:
+                    setUserAnswer("C")
+                    break;
+                case 3:
+                    setUserAnswer("D")
+                    break;
+                default:
+                    break;
             }
         }
     }
-
+    useEffect(() => {
+        if(userAnswer === correctAnswer) {
+            setScore(score + 1)
+        }
+    }, [userAnswer])
 
     useEffect(() => {
         if(passSpecificCategory[0].questions.length === (questionNo + 1) && (!!userAnswer || (count == 0))) {
@@ -77,42 +102,43 @@ const Card: React.FC<categoryProps> = ({ passSpecificCategory }) => {
             return
         } else if(!!userAnswer || count == 0) {
             setTimeout(() => {
-                setCount(100)
                 setUserAnswer('')
+                setUserIndex('')
                 setquestionNo(questionNo + 1)
-            },1000)
-            setCount(100)
+                setCount(100)
+            },1500)
         }
     }, [count])
 
     const answersOutput = Object.values(answers).map((item, index) => (
         <div
         key={index}
-        className={(index != parseInt(correctAnswer)) && (index == parseInt(userAnswer)) ? 'fail' : (index == parseInt(correctAnswer) && userAnswer == correctAnswer) ? 'success' : ''}
+        className={(userAnswer != correctAnswer) && (index == parseInt(userIndex)) ? 'fail' : (index == parseInt(userIndex) && userAnswer == correctAnswer) ? 'success' : ''}
         id={`${index}`}
-        onClick={!userAnswer ? checkAnswer(index) : undefined}>
+        // eslint-disable-next-line no-extra-boolean-cast
+        onClick={!userAnswer ? checkAnswer(index) : null}>
             {item}
         </div>
     ))
 
     return (
+        <>
         <div className={styles.Card}>
             <div className={styles.confetti}><Confetti active={ finish } config={ config } /></div>
             <div className={!finish ? styles.question_container : styles.question_container + " " + styles.full_height}>
                 <div className={styles.question}>
-                    <p> SCORE: {score}</p>
-                    {!finish ? <><span className={styles.questionNo}>{questionNo + 1} of {passSpecificCategory[0].questions.length}</span>
+                    <p className={styles.score}> SCORE: {score}</p>
+                    {!finish ? <><span className={!userAnswer ? styles.questionNo : styles.next_round + " " + styles.questionNo}>{questionNo + 1} of {passSpecificCategory[0].questions.length}</span>
                     <p>{questions}</p>
-                    <span id={styles.progress_bar} className={count < 25 ? styles.red : ''} style={{width: `${count}%`}}></span></>:
-                    null
+                    <span id={styles.progress_bar} className={count < 25 ? styles.red : ''} style={{width: `${count}%`}}></span></>:null
                     }
                 </div>
             </div>
            { !finish ?<div className={styles.answer_container}>
                 {answersOutput}
-                {/* {userAnswer ? <button disabled={!userAnswer ? true : false} className={styles.nextBtn} onClick={nextQuestion()}>Następne pytanie</button> : null} */}
             </div> : null}
         </div>
+        </>
     )
 }
 

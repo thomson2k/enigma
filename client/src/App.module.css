@@ -23,3 +23,14 @@ body {
 #logo img {
     width: 5em;
 }
+.login {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    padding: 1em;
+    cursor: pointer;
+}
+.login:hover {
+    background-color:rgba(212,212,216,0.2);
+    border-radius:20px;
+}
