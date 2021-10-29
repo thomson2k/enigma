@@ -116,7 +116,7 @@ const Card: React.FC<categoryProps> = ({ passSpecificCategory }) => {
         className={(userAnswer != correctAnswer) && (index == parseInt(userIndex)) ? 'fail' : (index == parseInt(userIndex) && userAnswer == correctAnswer) ? 'success' : ''}
         id={`${index}`}
         // eslint-disable-next-line no-extra-boolean-cast
-        onClick={!userAnswer ? checkAnswer(index) : null}>
+        onClick={!userAnswer ? checkAnswer(index) : undefined}>
             {item}
         </div>
     ))

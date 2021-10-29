@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { IState as Props } from "../App";
 import styles from "./ListCategory.module.css";
 import Card from "./Card";
@@ -8,23 +8,33 @@ import addIcon from "../images/add.svg";
 interface IProps {
   setData: React.Dispatch<React.SetStateAction<Props["data"]>>;
   data: Props["data"];
-  isAuthenticated: Props["isAuthenticated"];
+  ctx: Props["ctx"];
 }
 interface SelectProtected {
   readonly wrapperElement: HTMLDivElement;
   readonly inputElement: HTMLInputElement;
 }
 
-const ListCategory: FC<IProps> = ({ data, isAuthenticated }) => {
+const ListCategory: FC<IProps> = ({ data, ctx }) => {
   const [currentCategory, setcurrentCategory] = useState("");
   const [addNewToggle, setAddNewToggle] = useState(false);
   const [baseImage, setBaseImage] = useState(null);
   const [error, setError] = useState(false);
   const [questions, setQuestions] = useState({});
+  const [category, setCategory] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
 
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setQuestions({ ...questions, [e.target.name]: e.target.value })
+  useEffect(() => {
+    axios.get("http://localhost:8000/api/questions").then((res:any) => {
+      setCategory(res.data)
+    })
+
+  }, []);
+  // React.ChangeEvent<HTMLInputElement> | React.FormEventHandler<HTMLOptionElement>
+  const handleChange = (e:any) => {
+
+    setQuestions({ ...questions, [e.target.name]: e.target.value })
   }
   const clickHandler = () => {
     return (event: React.MouseEvent) => {
@@ -54,21 +64,23 @@ const ListCategory: FC<IProps> = ({ data, isAuthenticated }) => {
     })
   }
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files[0]
+      const file = e.target.files![0]
+
       const base64 = await convertBase64(file)
       setQuestions({ ...questions, "img": base64 })
   }
 
   const handleSubmit = (e:any):void => {
     e.preventDefault();
-    setAddNewToggle(!addNewToggle)
 
-    axios.post('http://localhost:8000/api/create/question', JSON.stringify(questions), {headers:{"Content-Type" : "application/json"}})
+    setAddNewToggle(!addNewToggle)
+    axios.post('http://localhost:8000/api/create/question',
+    JSON.stringify(questions),{headers:{"Content-Type" : "application/json"},withCredentials: true})
       .then((res) => {
-        console.log(res);
+        //console.log(res);
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
 
         setError(true)
       });
@@ -95,10 +107,9 @@ const ListCategory: FC<IProps> = ({ data, isAuthenticated }) => {
         <>
           <h1>Categories</h1>
           <div className={styles.category_container}>
-            {isAuthenticated ? <div className={styles.category_card} onClick={() => {setAddNewToggle(!addNewToggle)}}>Add new question <img src={addIcon} alt="add"/></div> : null }
+            {ctx ? ctx.isAdmin ?<div className={styles.category_card} onClick={() => {setAddNewToggle(!addNewToggle)}}>Add new question <img src={addIcon} alt="add"/></div> : null : null }
             {renderList()}
           </div>
-
         </>
       ) : (
         <>
@@ -115,6 +126,16 @@ const ListCategory: FC<IProps> = ({ data, isAuthenticated }) => {
     <form className={styles.form} onSubmit={handleSubmit}>
       <span onClick={() => {setAddNewToggle(!addNewToggle)}}>X</span>
       <label htmlFor="category">Category</label>
+      <select onChange={e => handleChange(e)} name="selectcategory" id="selectcategory">
+      <option id="select category" onChange={handleChange}>Select category:</option>
+        {
+          category.map((item : any) => {
+            return (
+              <option key={item.category} value={item.category}>{item.category}</option>
+            )
+          })
+        }
+      </select>
       <input
       type="text"
       onChange={handleChange}
