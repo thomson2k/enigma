@@ -4,7 +4,6 @@ import Question from '../models/question';
 
 const createQuestion = async (req: Request, res: Response, next: NextFunction) => {
     const { category, img, questionName, A, B, C, D, correctAnswer} = req.body;
-
     let categoryExist = await Question.find({ category: category });
 
     if(typeof categoryExist !== 'undefined' && categoryExist.length > 0) {
@@ -71,4 +70,13 @@ const getAllQuestions = (req: Request, res: Response, next: NextFunction) => {
     .catch(err => res.status(400).json('Error: ' + err));
 };
 
-export default { createQuestion, getAllQuestions };
+const deletequestion = async (req:any, res:any) => {
+    const { id } = req?.body;
+
+    await Question.findByIdAndDelete(id, (err:any) => {
+      if (err) throw err;
+    });
+    res.send("succesfully deleted");
+};
+
+export default { createQuestion, getAllQuestions, deletequestion };

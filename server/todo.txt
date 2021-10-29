@@ -1,7 +1,0 @@
--nest|express
--mongodb
--typescript
-
-
-
--flask
